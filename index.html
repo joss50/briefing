@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Briefing Panamá · Deutschland</title>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+<meta name="apple-mobile-web-app-title" content="Briefing">
+<meta name="application-name" content="Briefing">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#09090c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout im Stil von Toni's Arena: Kopf mit Gruß, Filter, Thema des Tages, Terminleiste, je Land ein Panel in Landesfarben */
+:root{
+  --bg:#09090c; --card:rgba(255,255,255,.035); --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+  --text:#f3efe6; --muted:#9a968e; --dim:#6b6862;
+  --gold:#d8b46a; --gold2:#f1d79b; --ok:#4fd18b; --warn:#e8c35a;
+  --pol:#b39cf5; --eco:#4fd18b; --spo:#ff8a5c; --soc:#6fb6e8;
+  --serif:'Fraunces', Georgia, "Times New Roman", serif; --sans:'Inter', system-ui, -apple-system, sans-serif;
+  --r:20px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(900px 500px at 10% -10%, rgba(216,180,106,.10), transparent 60%),
+  radial-gradient(800px 600px at 110% 10%, rgba(213,43,30,.08), transparent 60%),
+  radial-gradient(900px 700px at 50% 120%, rgba(47,111,222,.12), transparent 60%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.05;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding-block:clamp(18px,4vw,44px) 80px;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+
+/* Kopf */
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-bottom:26px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.crest{width:26px;height:26px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:12px;letter-spacing:0;color:var(--gold2)}
+h1{font-family:var(--serif);font-weight:300;font-size:clamp(32px,6vw,58px);line-height:1.04;letter-spacing:-.02em;margin:14px 0 0;text-wrap:balance}
+h1 em{font-style:italic;font-weight:400;background:linear-gradient(100deg,var(--gold2),var(--gold) 60%,#b8873c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.meta{text-align:right;color:var(--muted);font-size:13px;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.meta .today{font-family:var(--serif);font-size:18px;color:var(--text)}
+.clocks{display:flex;gap:14px;font-variant-numeric:tabular-nums}
+.clocks b{color:var(--text);font-weight:600}
+.upd{display:inline-flex;align-items:center;gap:7px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.dot.stale{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+
+/* Filter */
+.filters{display:flex;flex-direction:column;gap:10px;margin:26px 0 30px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line2);background:transparent;color:var(--muted);font:500 13px var(--sans);padding:9px 16px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.25s}
+.chip.sm{padding:6px 13px;font-size:12.5px}
+.chip:hover{color:var(--text);border-color:rgba(255,255,255,.3)}
+.chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.chip .sw{width:9px;height:9px;border-radius:50%}
+.chip.on{background:var(--text);color:#111;border-color:var(--text)}
+
+/* Thema des Tages */
+.heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px}
+.hero{position:relative;border-radius:28px;padding:clamp(22px,3.4vw,36px);overflow:hidden;border:1px solid var(--line2);
+  background:linear-gradient(140deg,rgba(255,255,255,.07),rgba(255,255,255,.015));isolation:isolate;min-width:0}
+.hero::before{content:"";position:absolute;inset:-40%;z-index:-1;background:radial-gradient(closest-side,var(--glow),transparent 70%);transform:translate(35%,-20%)}
+.hero::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--c1),var(--c2))}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.hero h2{font-family:var(--serif);font-weight:500;font-size:clamp(24px,3vw,34px);line-height:1.12;letter-spacing:-.01em;margin:14px 0 12px;text-wrap:balance}
+.hero p{margin:0;color:#cfcac0;max-width:62ch}
+
+/* Section title */
+.h2{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:54px 0 18px}
+.h2 h2{font-family:var(--serif);font-weight:400;font-size:clamp(24px,3vw,32px);letter-spacing:-.01em;margin:0}
+.h2 .sub{color:var(--muted);font-size:13px}
+
+/* Termine */
+.agenda{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--card)}
+.day{display:grid;grid-template-columns:120px 1fr;border-top:1px solid var(--line)}
+.day:first-child{border-top:0}
+.day .d{padding:18px;border-right:1px solid var(--line)}
+.day .d b{display:block;font-family:var(--serif);font-size:30px;font-weight:500;line-height:1}
+.day .d span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+.day .d .rel{display:block;margin-top:6px;color:var(--gold);letter-spacing:.06em;text-transform:none}
+.ev{display:grid;grid-template-columns:62px 1fr;gap:14px;align-items:center;padding:14px 18px;border-top:1px solid var(--line)}
+.ev:first-child{border-top:0}
+.ev .t{font-variant-numeric:tabular-nums;font-weight:600}
+.ev .t.all{color:var(--dim);font-weight:500;font-size:12px}
+.ev .ttl{font-weight:600}
+.ev .cmp{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.pill{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* Länder-Panels */
+.club{margin-top:30px;border-radius:26px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));overflow:hidden}
+.club-head{display:flex;align-items:center;gap:18px;padding:26px clamp(18px,3vw,32px);position:relative;border-bottom:1px solid var(--line);isolation:isolate}
+.club-head::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(600px 160px at 0% 50%,var(--glow),transparent 70%)}
+.club-head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--c1),var(--c2) 40%,transparent 80%)}
+.mono{width:62px;height:62px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:17px;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.35),transparent 45%),linear-gradient(145deg,var(--c1),var(--c2));color:#fff;box-shadow:0 10px 30px var(--glow),inset 0 0 0 2px rgba(255,255,255,.25);text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.club-head h3{font-family:var(--serif);font-weight:500;font-size:clamp(24px,3.2vw,34px);line-height:1.05;margin:0}
+.club-head .tag{color:var(--muted);font-size:13px;font-style:italic;font-family:var(--serif)}
+.club-body{padding:clamp(18px,3vw,32px)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{padding:18px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid var(--line)}
+.stat .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--serif);font-size:26px;font-weight:500;margin:6px 0 2px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .dt{font-size:12.5px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
+.grid2 > div{min-width:0}
+.blk h4{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:0 0 10px}
+.blk h4 .pill{width:7px;height:7px}
+.blk h4 .n{color:var(--dim);letter-spacing:.1em}
+.blk + .blk{margin-top:28px}
+.it{padding:14px 0;border-top:1px solid var(--line)}
+.it:first-of-type{border-top:0;padding-top:2px}
+.it .ti{font-family:var(--serif);font-size:18px;line-height:1.28;text-wrap:balance}
+.it .tx{font-size:14px;color:#bdb8ae;margin-top:5px}
+.it .sr{font-size:12px;color:var(--muted);margin-top:7px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.it .sr a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2)}
+.it .sr a:hover{color:var(--text);border-color:var(--muted)}
+.new{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ok);border:1px solid rgba(79,209,139,.4);padding:2px 6px;border-radius:6px}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+
+footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--dim);font-size:12.5px}
+footer b{color:var(--muted);font-weight:500}
+
+.fade{animation:fade .6s ease both}
+@keyframes fade{from{opacity:.001;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.chip{transition:none}}
+
+@media (max-width:820px){
+  .grid2{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  .meta{text-align:left;align-items:flex-start}
+  .day{grid-template-columns:1fr}
+  .day .d{border-right:0;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:10px}
+  .day .d .rel{margin:0 0 0 auto}
+  .ev{grid-template-columns:52px 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand"><span class="crest">B</span>Briefing Panamá · Deutschland</div>
+      <h1 id="greet">¡Hola! Das ist <em>heute</em> wichtig.</h1>
+    </div>
+    <div class="meta">
+      <div class="today" id="today"></div>
+      <div class="clocks"><span>Panamá <b id="t-pa">--:--</b></span><span>Berlin <b id="t-de">--:--</b></span></div>
+      <div class="upd"><span class="dot" id="dot"></span><span id="upd"></span></div>
+    </div>
+  </header>
+
+  <nav class="filters" aria-label="Filter">
+    <div class="row" id="f-country"></div>
+    <div class="row" id="f-cat"></div>
+  </nav>
+
+  <section class="heroes" id="heroes"></section>
+
+  <div class="h2"><h2>Die nächsten Termine</h2><span class="sub">Alle Zeiten deutsche Zeit</span></div>
+  <section class="agenda" id="agenda"></section>
+
+  <div id="panels"></div>
+
+  <footer>
+    <div><b>Briefing Panamá · Deutschland</b> · recherchierte Zusammenfassung, Inhalte stammen aus den verlinkten Quellen.</div>
+    <div>Meldungen ohne Tagesdatum sind aus diesem Monat.</div>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  const D = window.BRIEFING_DATA || {countries:[],agenda:[]};
+  const C = D.countries, byId = Object.fromEntries(C.map(c=>[c.id,c]));
+  const CAT = {pol:{n:"Politik",c:"var(--pol)"},eco:{n:"Wirtschaft",c:"var(--eco)"},spo:{n:"Sport",c:"var(--spo)"},soc:{n:"Gesellschaft",c:"var(--soc)"}};
+  const TZ = "Europe/Berlin";
+  const esc = v => String(v ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const toDate = s => new Date(s.length===10 ? s+"T12:00:00+01:00" : s);
+  const fmt = (s,o) => new Intl.DateTimeFormat("de-DE",Object.assign({timeZone:TZ},o)).format(typeof s==="string"?toDate(s):s);
+  const dayKey = s => fmt(s,{year:"numeric",month:"2-digit",day:"2-digit"});
+  const time = s => fmt(s,{hour:"2-digit",minute:"2-digit"});
+
+  function relDay(s){
+    const iso = k => k.split(".").reverse().join("-");
+    const d = Math.round((new Date(iso(dayKey(s))) - new Date(iso(dayKey(new Date()))))/864e5);
+    return d===0?"Heute":d===1?"Morgen":d===2?"Übermorgen":d>2?`in ${d} Tagen`:"";
+  }
+
+  // Kopf
+  if(D.owner) document.getElementById("greet").innerHTML = `¡Hola, <em>${esc(D.owner)}</em>! Das ist heute wichtig.`;
+  document.getElementById("today").textContent = fmt(new Date(),{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  document.getElementById("upd").textContent = "Stand " + fmt(D.updated,{weekday:"short",day:"numeric",month:"short"}) + ", " + time(D.updated) + " Uhr";
+  if((Date.now()-new Date(D.updated))/36e5 > 48) document.getElementById("dot").classList.add("stale");
+  function clocks(){
+    const o={hour:"2-digit",minute:"2-digit"};
+    document.getElementById("t-pa").textContent = new Date().toLocaleTimeString("de-DE",{...o,timeZone:"America/Panama"});
+    document.getElementById("t-de").textContent = new Date().toLocaleTimeString("de-DE",{...o,timeZone:TZ});
+  }
+  clocks(); setInterval(clocks,15e3);
+
+  // Filter-Zustand
+  let country = "all", cat = "all";
+  try{ const c = localStorage.getItem("bf-cat"); if(c && (c==="all"||CAT[c])) cat = c; }catch(e){}
+  const visible = () => country==="all" ? C : [byId[country]];
+
+  function renderFilters(){
+    const cs = [{id:"all",name:"Beide Länder",c:"#d8b46a"}].concat(C.map(c=>({id:c.id,name:c.name,c:c.colors.primary})));
+    document.getElementById("f-country").innerHTML = cs.map(i=>`<button class="chip ${country===i.id?"on":""}" id="fc-${i.id}" data-c="${esc(i.id)}" aria-pressed="${country===i.id}"><span class="sw" style="background:${esc(i.c)}"></span>${esc(i.name)}</button>`).join("");
+    const ks = [["all",{n:"Alle Ressorts",c:"var(--muted)"}]].concat(Object.entries(CAT));
+    document.getElementById("f-cat").innerHTML = ks.map(([id,k])=>`<button class="chip sm ${cat===id?"on":""}" id="fk-${id}" data-k="${id}" aria-pressed="${cat===id}"><span class="sw" style="background:${k.c}"></span>${k.n}</button>`).join("");
+  }
+  document.querySelector(".filters").addEventListener("click",e=>{
+    const b = e.target.closest(".chip"); if(!b) return;
+    if(b.dataset.c){ const id=b.dataset.c; if(id==="all"){ history.replaceState(null,"",location.pathname+location.search); setCountry("all"); } else location.hash = id; }
+    if(b.dataset.k){ cat = b.dataset.k; try{ localStorage.setItem("bf-cat",cat); }catch(e){} renderAll(); }
+  });
+  function setCountry(id){ country = byId[id] ? id : "all"; renderAll(); }
+  window.addEventListener("hashchange",()=>setCountry(location.hash.slice(1)));
+
+  function renderHeroes(){
+    document.getElementById("heroes").innerHTML = visible().map(c=>`
+      <article class="hero fade" style="--c1:${esc(c.colors.primary)};--c2:${esc(c.colors.secondary)};--glow:${esc(c.colors.glow)}">
+        <div class="eyebrow">Thema des Tages · ${esc(c.name)}</div>
+        <h2>${esc(c.lead.title)}</h2>
+        <p>${esc(c.lead.text)}</p>
+      </article>`).join("");
+  }
+
+  function renderAgenda(){
+    const el = document.getElementById("agenda");
+    const today = dayKey(new Date());
+    const iso = k => k.split(".").reverse().join("-");
+    const list = (D.agenda||[]).filter(a=>(country==="all"||a.country===country) && iso(dayKey(a.start)) >= iso(today))
+      .sort((a,b)=>toDate(a.start)-toDate(b.start)).slice(0,10);
+    if(!list.length){ el.innerHTML = '<div class="ev"><div></div><div class="empty">Keine anstehenden Termine.</div></div>'; return; }
+    const groups = {}, order = [];
+    list.forEach(a=>{ const k=dayKey(a.start); if(!groups[k]){groups[k]=[];order.push(k);} groups[k].push(a); });
+    el.innerHTML = order.map(k=>{
+      const f = groups[k][0].start;
+      return `<div class="day fade"><div class="d"><b>${fmt(f,{day:"numeric"})}</b><span>${fmt(f,{weekday:"short",month:"short"})}</span><span class="rel">${relDay(f)}</span></div><div>${
+        groups[k].map(a=>{ const c=byId[a.country]; return `<div class="ev"><div class="t ${a.allDay?"all":""}">${a.allDay?"ganztags":time(a.start)}</div><div><div class="ttl">${esc(a.title)}</div><div class="cmp"><span class="pill" style="background:${esc(c.colors.primary)}"></span>${esc(c.name)} · ${esc(a.note||"")}</div></div></div>`; }).join("")
+      }</div></div>`;
+    }).join("");
+  }
+
+  function itemHtml(n){
+    const d = n.date ? fmt(n.date,{day:"numeric",month:"short"}) : "Nov.";
+    const src = (n.src||[]).map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener">${esc(s.n)}</a>`).join(" · ");
+    return `<div class="it"><div class="ti">${esc(n.title)}</div><div class="tx">${esc(n.text)}</div><div class="sr">${n.today?'<span class="new">Heute</span>':""}<span>${d}</span><span>·</span>${src}</div></div>`;
+  }
+  function blockHtml(c,k){
+    const items = c.items.filter(n=>n.cat===k);
+    return `<div class="blk"><h4><span class="pill" style="background:${CAT[k].c}"></span>${CAT[k].n}<span class="n">${items.length}</span></h4>${items.length?items.map(itemHtml).join(""):'<div class="empty">Keine Meldungen.</div>'}</div>`;
+  }
+  function renderPanels(){
+    document.getElementById("panels").innerHTML = visible().map(c=>{
+      let body;
+      if(cat==="all") body = `<div class="grid2"><div>${blockHtml(c,"pol")}${blockHtml(c,"eco")}</div><div>${blockHtml(c,"spo")}${blockHtml(c,"soc")}</div></div>`;
+      else body = `<div class="grid2" style="grid-template-columns:1fr"><div>${blockHtml(c,cat)}</div></div>`;
+      return `<article class="club fade" id="sec-${esc(c.id)}" style="--c1:${esc(c.colors.primary)};--c2:${esc(c.colors.secondary)};--glow:${esc(c.colors.glow)}">
+        <div class="club-head"><div class="mono">${esc(c.short)}</div><div><h3>${esc(c.name)}</h3><div class="tag">${esc(c.tagline)}</div></div></div>
+        <div class="club-body">
+          <div class="stats">${c.stats.map(s=>`<div class="stat"><div class="l">${esc(s.label)}</div><div class="v">${esc(s.value)}</div><div class="dt">${esc(s.detail)}</div></div>`).join("")}</div>
+          ${body}
+        </div></article>`;
+    }).join("");
+  }
+
+  function renderAll(){ renderFilters(); renderHeroes(); renderAgenda(); renderPanels(); }
+  setCountry(location.hash.slice(1));
+  setInterval(renderAgenda, 60e3);
+})();
+</script>
+</body>
+</html>

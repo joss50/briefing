@@ -1,0 +1,15 @@
+{
+  "name": "Briefing Panamá · Deutschland",
+  "short_name": "Briefing",
+  "description": "Tägliche Top-Meldungen aus Panamá und Deutschland zu Politik, Wirtschaft, Sport und Gesellschaft.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09090c",
+  "theme_color": "#09090c",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
