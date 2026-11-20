@@ -73,6 +73,7 @@ h1 em{font-style:italic;font-weight:400;background:linear-gradient(100deg,var(--
 .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:600}
 .hero h2{font-family:var(--serif);font-weight:500;font-size:clamp(24px,3vw,34px);line-height:1.12;letter-spacing:-.01em;margin:14px 0 12px;text-wrap:balance}
 .hero p{margin:0;color:#cfcac0;max-width:62ch}
+.recap{margin-top:8px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 
 /* Section title */
 .h2{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:54px 0 18px}
@@ -149,7 +150,7 @@ footer b{color:var(--muted);font-weight:500}
   <header>
     <div>
       <div class="brand"><span class="crest">B</span>Briefing Panamá · Deutschland</div>
-      <h1 id="greet">¡Hola! Das ist <em>heute</em> wichtig.</h1>
+      <h1 id="greet">¡Hola! Das war <em>heute</em> los.</h1>
     </div>
     <div class="meta">
       <div class="today" id="today"></div>
@@ -172,7 +173,7 @@ footer b{color:var(--muted);font-weight:500}
 
   <footer>
     <div><b>Briefing Panamá · Deutschland</b> · recherchierte Zusammenfassung, Inhalte stammen aus den verlinkten Quellen.</div>
-    <div>Meldungen ohne Tagesdatum sind aus diesem Monat.</div>
+    <div>Rückblick jeden Abend um 19 Uhr Ortszeit: Deutschland 19 Uhr, Panamá 19 Uhr (1 Uhr deutscher Zeit).</div>
   </footer>
 </div>
 
@@ -196,7 +197,7 @@ footer b{color:var(--muted);font-weight:500}
   }
 
   // Kopf
-  if(D.owner) document.getElementById("greet").innerHTML = `¡Hola, <em>${esc(D.owner)}</em>! Das ist heute wichtig.`;
+  if(D.owner) document.getElementById("greet").innerHTML = `¡Hola, <em>${esc(D.owner)}</em>! Das war <em>heute</em> los.`;
   document.getElementById("today").textContent = fmt(new Date(),{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   document.getElementById("upd").textContent = "Stand " + fmt(D.updated,{weekday:"short",day:"numeric",month:"short"}) + ", " + time(D.updated) + " Uhr";
   if((Date.now()-new Date(D.updated))/36e5 > 48) document.getElementById("dot").classList.add("stale");
@@ -226,10 +227,21 @@ footer b{color:var(--muted);font-weight:500}
   function setCountry(id){ country = byId[id] ? id : "all"; renderAll(); }
   window.addEventListener("hashchange",()=>setCountry(location.hash.slice(1)));
 
+  // Tagesrückblick: Stand je Land in Ortszeit (und bei Panamá zusätzlich deutsche Zeit)
+  const LOCAL_TZ = {pa:"America/Panama", de:"Europe/Berlin"};
+  function stand(c){
+    if(!c.updated) return "Tagesrückblick · jeden Abend um 19 Uhr Ortszeit";
+    const tz = LOCAL_TZ[c.id] || TZ, d = toDate(c.updated);
+    const f = o => new Intl.DateTimeFormat("de-DE",Object.assign({timeZone:tz},o)).format(d);
+    let s = `Tagesrückblick ${f({weekday:"short",day:"numeric",month:"short"})} · ${f({hour:"2-digit",minute:"2-digit"})} Uhr Ortszeit`;
+    if(tz !== TZ) s += ` (${time(c.updated)} Uhr in Deutschland)`;
+    return esc(s);
+  }
   function renderHeroes(){
     document.getElementById("heroes").innerHTML = visible().map(c=>`
       <article class="hero fade" style="--c1:${esc(c.colors.primary)};--c2:${esc(c.colors.secondary)};--glow:${esc(c.colors.glow)}">
-        <div class="eyebrow">Thema des Tages · ${esc(c.name)}</div>
+        <div class="eyebrow">Was geht in ${esc(c.name)}</div>
+        <div class="recap">${stand(c)}</div>
         <h2>${esc(c.lead.title)}</h2>
         <p>${esc(c.lead.text)}</p>
       </article>`).join("");
